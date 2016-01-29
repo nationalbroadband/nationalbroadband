@@ -1,0 +1,4 @@
+RewriteEngine on
+RewriteCond $1 !^(index\.php|userpanel|style|images)
+RewriteRule ^(.*)$ index.php?/$1 [L]
+

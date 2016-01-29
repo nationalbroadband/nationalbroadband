@@ -1,0 +1,304 @@
+
+		<!-- BEGIN CONTENT -->
+		<div class="page-content-wrapper">
+			<div class="page-content">
+				<!-- BEGIN PAGE HEADER-->
+				<h3 class="page-title">
+				Dashboard</h3>
+				<div class="page-bar">
+					<ul class="page-breadcrumb">
+						<li>
+							<i class="fa fa-home"></i>
+							<a href="<?php echo base_url(); ?>">Home</a>
+							<i class="fa fa-angle-right"></i>
+						</li>
+						<li>
+							<a href="#">Dashboard</a>
+						</li>
+					</ul>
+				</div>
+				<!-- END PAGE HEADER-->
+			<div class="note note-success note-bordered">
+				<p>
+			<?php $query = $this->db->query("SELECT COUNT(Username) AS UCount FROM users WHERE Active='1'");
+						$row = $query->row(); 
+						echo "<p class=\"alert-link\">Current Active Users:" . $row->UCount . "</p>"; ?>
+				</p>
+			</div>
+<?php if($this->session->userdata('user_type')=="admin"){?>
+				<!-- BEGIN DASHBOARD STATS -->
+				<div class="row">
+                	<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+						<a class="dashboard-stat dashboard-stat-light blue-soft" href="<?php echo base_url(); ?>welcome/newusers">
+						<div class="visual">
+							<i class="fa fa-users"></i>
+						</div>
+						<div class="details">
+							<div class="number">
+									<?php
+										$query = $this->db->query("SELECT COUNT(Username) AS NUCount FROM users WHERE DATE(CDate) BETWEEN (DATE(NOW()) - INTERVAL 1 DAY) AND DATE(NOW())");
+											$row = $query->row();
+											if (!empty($row->NUCount)) {
+												echo $row->NUCount; // call attributes
+												//echo " Users Added";
+											} else {
+												echo "- NiL -";
+											}
+									?>
+							</div>
+							<div class="desc">
+								 Online Users
+							</div>
+						</div>
+						</a>
+					</div>
+					<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+						<a class="dashboard-stat dashboard-stat-light blue-soft" href="<?php echo base_url(); ?>welcome/newusers">
+						<div class="visual">
+							<i class="fa fa-users"></i>
+						</div>
+						<div class="details">
+							<div class="number">
+									<?php
+										$query = $this->db->query("SELECT COUNT(Username) AS NUCount FROM users WHERE DATE(CDate) BETWEEN (DATE(NOW()) - INTERVAL 1 DAY) AND DATE(NOW())");
+											$row = $query->row();
+											if (!empty($row->NUCount)) {
+												echo $row->NUCount; // call attributes
+												//echo " Users Added";
+											} else {
+												echo "- NiL -";
+											}
+									?>
+							</div>
+							<div class="desc">
+								 Latest Customers
+							</div>
+						</div>
+						</a>
+					</div>
+					<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+						<a class="dashboard-stat dashboard-stat-light red-soft" href="<?php echo base_url(); ?>welcome/expireusers">
+						<div class="visual">
+							<i class="fa fa-user"></i>
+						</div>
+						<div class="details">
+							<div class="number">
+									<?php
+										$query = $this->db->query("SELECT COUNT(Username) AS DeAUCount FROM users WHERE DATE(Usr_DeActv) BETWEEN (DATE(NOW()) - INTERVAL 1 DAY) AND DATE(NOW())");
+											$row = $query->row(); 
+											if (!empty($row->DeAUCount)) {
+												echo $row->DeAUCount; // call attributes
+												//echo " Users Stoped";
+											} else {
+												echo "- NiL -";
+											}
+									?>
+							</div>
+							<div class="desc">
+								 De-Activated Customers
+							</div>
+						</div>
+						</a>
+					</div>
+					<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+						<a class="dashboard-stat dashboard-stat-light green-soft" href="<?php echo base_url(); ?>welcome/newdealers">
+						<div class="visual">
+							<i class="fa fa-user"></i>
+						</div>
+						<div class="details">
+							<div class="number">
+									<?php
+										$query = $this->db->query("SELECT COUNT(Dlrname) AS NDCount FROM dealer WHERE DATE(CDate) BETWEEN (DATE(NOW()) - INTERVAL 1 MONTH) AND DATE(NOW())");
+											$row = $query->row(); 
+											if (!empty($row->NDCount)) {
+												echo $row->NDCount; // call attributes
+												//echo " Dealers Added";
+											} else {
+												echo "- NiL -";
+											}
+									?>
+							</div>
+							<div class="desc">
+								 New Dealers
+							</div>
+						</div>
+						</a>
+					</div>
+					<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+						<a class="dashboard-stat dashboard-stat-light purple-soft" href="javascript:;">
+						<div class="visual">
+							<i class="fa fa-dollar"></i>
+						</div>
+						<div class="details">
+							<div class="number">
+									<?php
+										$query = $this->db->query("SELECT SUM(paid) AS PaidAmount FROM payments WHERE payment_date > DATE_FORMAT(DATE(NOW()), '%Y-%m-01') GROUP BY MONTH(payment_date)");
+											$row = $query->row(); 
+											if (!empty($row->PaidAmount)) {
+												echo $row->PaidAmount; // call attributes
+												//echo " Dealers Added";
+											} else {
+												echo "- NiL -";
+											}
+									?>
+							</div>
+							<div class="desc">
+								 Payments
+							</div>
+						</div>
+						</a>
+					</div>
+				</div>
+				<!-- END DASHBOARD STATS -->
+
+<?php	$dayf=date('Y-m-d', strtotime('-1 day'));
+						$dayt=date("Y-m-d", strtotime('+1 day'));?>
+						<div class="portlet box blue">
+							<div class="portlet-title">
+								<div class="caption">
+									<i class="fa fa-dollar"></i>Recent Payments for last two days <?php echo $dayf; ?> To <?php echo $dayt; ?>
+								</div>
+							</div>
+							<div class="portlet-body">
+								<div class="table-responsive">
+									<table class="table table-bordered">
+									<thead>
+									<tr>
+                                            <th>Dealer ID</th>
+                                            <th>Date</th> 
+                                            <th>Receipt</th>
+                                            <th>Total Amount</th>
+                                            <th>Paid</th>
+                                            <th>Discount</th>
+                                            <th>Balance</th>
+                                            <th>View</th>
+									</tr>
+									</thead>
+                                    <tbody>
+								<?php $query = $this->db->query("SELECT * FROM payments WHERE paid > 0 and payment_date BETWEEN '".$dayf."' AND '".$dayt."' ORDER BY payment_date DESC");
+											$count = 0;
+											if ($query->num_rows() > 0)
+											{
+											   foreach ($query->result() as $row)
+											   {?>
+												<tr class="odd gradeX">
+													<td><a href="<?php echo base_url(); ?>payments/index/?Dlr=<?php echo $row->customer; ?>"><?php echo $row->customer; ?></a></td>
+                                                    <td><?php echo $row->payment_date; ?></td>
+													
+													<td><?php echo $row->Receipt; ?></td>
+                                                    <td><?php echo $row->Amount; ?></td>
+													<td><?php echo $row->paid; ?></td>
+													<td><?php echo $row->Discount; ?></td>
+													<td><?php echo $row->Balance; ?></td>
+													
+													<td><center><a href="<?php echo base_url(); ?>payments/pview/<?php echo $row->id; ?>"><i class="glyphicon glyphicon-search"></i></a></center></td>
+												</tr>
+										<?php }
+										} else {?>
+												<tr class="odd gradeX">
+													<td><code>- - -</code></td>
+													<td><code>- No -</code></td>
+													<td><code>- Data -</code></td>
+													<td><code>- Found -</code></td>
+													<td><code>- - -</code></td>
+													<td><code>- Try -</code></td>
+													<td><code>- Again -</code></td>
+													<td><code>- - -</code></td>
+												</tr>
+										<?php } ?>
+								</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+<?php } ?>
+            <!-- /.row -->
+			<div class="row">
+					<div class="col-md-6">
+						<!-- BEGIN SAMPLE TABLE PORTLET-->
+						<div class="portlet box red">
+							<div class="portlet-title">
+								<div class="caption">
+									<i class="fa fa-users"></i>Package Active Users
+								</div>
+							</div>
+							<div class="portlet-body">
+								<div class="table-scrollable">
+									<table class="table table-hover">
+									<thead>
+									<tr>
+										<tr>
+                                            <th>#</th>
+                                            <th>Package</th>
+                                            <th>Total Users</th>
+                                        </tr>
+									</tr>
+									</thead>
+									<tbody>
+									<?php
+											$query = $this->db->query("SELECT COUNT(Username) AS UCount, Package FROM users WHERE Active='1' GROUP BY Package");
+											$count = 0;
+											foreach ($query->result() as $row) {
+												$count++;
+												echo "<tr>";
+												echo "<td>" . $count."</td>";
+												echo "<td>" . $row->Package."</td>";
+												echo "<td>".$row->UCount . " Users</td>";
+												echo "</tr>";
+											}
+									?>
+                                    </tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+						<!-- END SAMPLE TABLE PORTLET-->
+					</div>
+					<div class="col-md-6">
+						<!-- BEGIN BORDERED TABLE PORTLET-->
+						<div class="portlet box yellow">
+							<div class="portlet-title">
+								<div class="caption">
+									<i class="fa fa-cloud"></i> Dealer’s Online Users
+								</div>
+							</div>
+							<div class="portlet-body">
+								<div class="table-scrollable">
+									<table class="table table-bordered table-hover">
+									<thead>
+										<tr>
+                                            <th>#</th>
+                                            <th>Dealer ID</th>
+                                            <th>Total Users</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+									<?php
+											$query = $this->db->query("SELECT COUNT(username) AS UCount, creator FROM radacct WHERE acctstoptime IS NULL GROUP BY creator");
+											$count = 0;
+											foreach ($query->result() as $row) {
+												$count++;
+												echo "<tr>";
+												echo "<td>" . $count."</td>";
+												echo "<td>" . $row->creator."</td>";
+												echo "<td>".$row->UCount . " Users</td>";
+												echo "</tr>";
+											}
+									?>
+                                    </tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+						<!-- END BORDERED TABLE PORTLET-->
+					</div>
+				</div>
+            <!-- /.row -->
+
+			</div>
+		</div>
+		<!-- END CONTENT -->
+		<!-- BEGIN QUICK SIDEBAR -->
+		<!--Cooming Soon...-->
+		<!-- END QUICK SIDEBAR -->
+	</div>

@@ -1,0 +1,10 @@
+RewriteEngine on
+RewriteCond $1 !^(index\.php|files|style|fonts|css|js|robots\.txt)
+RewriteRule ^(.*)$ index.php?/$1 [L]
+# ALLOW USER BY IP
+#<Limit GET POST PUT HEAD DELETE CONNECT OPTIONS>
+# order deny,allow
+# deny from all
+# allow from 172.16.3.180
+#</Limit>
+

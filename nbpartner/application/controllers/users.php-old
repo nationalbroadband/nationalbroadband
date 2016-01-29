@@ -1,0 +1,82 @@
+<?php defined('BASEPATH') OR exit('No direct script access allowed');
+
+class Users extends CI_Controller {
+	
+	function login() {
+		$this->load->library('user_agent');
+		$data['error']=0;
+		if($_POST){
+			$this->load->model('user');
+			$username=$this->input->post('username',true);
+			$password=$this->input->post('password',true);
+			//$type=$this->input->post('user_type',true);
+			$user=$this->user->login($username,$password);
+			if(empty($user)){
+				$data['details']=array(
+					'user_id'=>$username,
+					'ipadd'=>$this->input->ip_address(),
+					'client_user_agent'=>$this->agent->agent_string(),
+					'referer_page'=>$this->agent->referrer(),
+					'request_uri'=>$this->input->server('REQUEST_URI'),
+					'Action'=>'Retry',
+					'dept'=>'AdminPage'
+				);
+				$data=array(
+					'user_id'=>$username,
+					'ipadd'=>$this->input->ip_address(),
+					'client_user_agent'=>$this->agent->agent_string(),
+					'referer_page'=>$this->agent->referrer(),
+					'request_uri'=>$this->input->server('REQUEST_URI'),
+					'Action'=>'Retry',
+					'dept'=>'DealerPage'
+				);
+				
+				$this->db->insert('login_attempts', $data);
+			
+			$data['error']=1;
+
+			} else {
+				$this->session->set_userdata('Billing',$user['ID']);
+				$this->session->set_userdata('username',$user['Dlrname']);
+				$this->session->set_userdata('ShrtID',$user['ShrtID']);
+				$this->session->set_userdata('DealerPerm',$user['DSub']);
+				$this->session->set_userdata('DlrLimit',$user['BalLimit']);
+				$this->session->set_userdata('DlrBalance',$user['Balance']);
+				$this->session->set_userdata('DealerExpiry',$user['DExpiry']);
+				$this->session->set_userdata('DealerLogo',$user['DLogo']);
+				$this->session->set_userdata('manager',$user['creator']);
+			if(!empty($user['DSub'])) {
+				$this->session->set_userdata('user_type','admin');
+			} else {
+				$this->session->set_userdata('user_type','author');
+			}
+				$this->session->set_userdata('logintime',time());
+								
+				$data=array(
+					'user_id'=>$this->session->userdata('username'),
+					'ipadd'=>$this->input->ip_address(),
+					'client_user_agent'=>$this->agent->agent_string(),
+					'referer_page'=>$this->agent->referrer(),
+					'request_uri'=>$this->input->server('REQUEST_URI'),
+					'Action'=>'LogedIn',
+					'dept'=>'DealerPage'
+				);
+				
+				//
+				$this->db->insert('login_attempts', $data);
+				//$data['success']=$this->user->update_post($data);
+				
+				redirect(base_url());
+			}
+		}
+		
+		$this->load->view('login',$data);
+
+	}
+	
+	function logout() {
+		$this->session->sess_destroy();
+		redirect(base_url());
+	}
+
+}
